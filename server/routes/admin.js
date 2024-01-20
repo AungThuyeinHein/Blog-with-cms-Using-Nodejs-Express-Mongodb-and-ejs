@@ -47,9 +47,9 @@ router.get('/admin', async (req, res) => {
 
 router.post('/admin', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -75,11 +75,15 @@ router.post('/admin', async (req, res) => {
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-      const user = await User.create({ username, password: hashedPassword });
+      const user = await User.create({
+        email,
+        username,
+        password: hashedPassword,
+      });
       res.status(201).json({ message: 'User created.', user });
     } catch (error) {
       if (error.code === 11000) {
