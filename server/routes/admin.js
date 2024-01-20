@@ -105,7 +105,7 @@ router.get('/dashboard', authMiddleware, async (req, res) => {
       title: 'Dashboard',
       description: 'Using Nodejs Express & Mongodb',
     };
-    const data = await Post.find();
+    const data = await Post.find({ owner: req.userId });
     res.render('admin/dashboard', {
       locals,
       data,
@@ -143,11 +143,13 @@ router.post('/add-post', authMiddleware, async (req, res) => {
     const newPost = new Post({
       title: req.body.title,
       body: req.body.body,
+      owner: req.userId,
     });
     await Post.create(newPost);
     res.redirect('dashboard');
   } catch (error) {
     console.log(error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
